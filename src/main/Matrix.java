@@ -115,11 +115,10 @@ public class Matrix
 
         for (int i = 0; i < c.rows; i++)
         {
-            int colsPerThread = minRowsColsPerThread + extraRowsCols;
-            for (int x = 0, j = 0; x < threadCount; x++, j += colsPerThread)
+            for (int x = 0, j = 0; x < threadCount; x++, j += minRowsColsPerThread)
             {
-                futures.add(executor.submit(new MatrixMultParallel3(i, j, j + colsPerThread, a, r, c)));
-                colsPerThread = minRowsColsPerThread;
+                int cols = (x < threadCount-1 ? minRowsColsPerThread : minRowsColsPerThread + extraRowsCols);
+                futures.add(executor.submit(new MatrixMultParallel3(i, j, j + cols, a, r, c)));
             }
 
             wait(futures);
@@ -143,11 +142,10 @@ public class Matrix
         ArrayList<Future> futures = new ArrayList<>();
         ExecutorService executor = Executors.newCachedThreadPool();
 
-        int rowsPerThread = minRowsColsPerThread + extraRowsCols;
-        for (int x = 0, i = 0; x < threadCount; x++, i += rowsPerThread)
+        for (int x = 0, i = 0; x < threadCount; x++, i += minRowsColsPerThread)
         {
-            futures.add(executor.submit(new MatrixMultParallel4(i, i + rowsPerThread, a, r, c)));
-            rowsPerThread = minRowsColsPerThread;
+            int rows = (x < threadCount-1 ? minRowsColsPerThread : minRowsColsPerThread + extraRowsCols);
+            futures.add(executor.submit(new MatrixMultParallel4(i, i + rows, a, r, c)));
         }
 
         wait(futures);

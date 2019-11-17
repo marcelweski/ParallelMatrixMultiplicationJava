@@ -5,6 +5,7 @@ import main.App;
 import static org.junit.Assert.*;
 
 import main.Matrix;
+import main.Timer;
 import org.junit.Test;
 
 public class Tester
@@ -118,5 +119,61 @@ public class Tester
         Matrix c = Matrix.multParallel4(a, b);
 
         assertEquals(cSerial, c);
+    }
+
+    @Test
+    public void testRandomParallel3Time()
+    {
+        Timer timer = new Timer();
+
+        System.out.println("multParallel3");
+        System.out.println("   N       tseq       tpar   s(n)");
+        for (int N = 128; N <= 2048; N *= 2)
+        {
+            Matrix a = Matrix.createRandomized(N, N+1);
+            Matrix b = Matrix.createRandomized(N+1, N);
+
+            timer.start();
+            Matrix cSerial = Matrix.multSerial(a, b);
+            double timeSerial = timer.getMilliseconds();
+
+            timer.start();
+            Matrix c = Matrix.multParallel3(a, b);
+            double timeParallel = timer.getMilliseconds();
+
+            assertEquals(cSerial, c);
+
+            double speedUp = timeSerial/timeParallel;
+
+            System.out.printf("%4d %7.1f ms %7.1f ms %6.2f\n", N, timeSerial, timeParallel, speedUp);
+        }
+    }
+
+    @Test
+    public void testRandomParallel4Time()
+    {
+        Timer timer = new Timer();
+
+        System.out.println("multParallel4");
+        System.out.println("   N       tseq       tpar   s(n)");
+        for (int N = 128; N <= 2048; N *= 2)
+        {
+            Matrix a = Matrix.createRandomized(N, N+1);
+            Matrix b = Matrix.createRandomized(N+1, N);
+
+            timer.start();
+            Matrix cSerial = Matrix.multSerial(a, b);
+            double timeSerial = timer.getMilliseconds();
+
+            timer.start();
+            Matrix c = Matrix.multParallel4(a, b);
+            double timeParallel = timer.getMilliseconds();
+
+            assertEquals(cSerial, c);
+
+            double speedUp = timeSerial/timeParallel;
+
+            System.out.printf("%4d %7.1f ms %7.1f ms %6.2f\n", N, timeSerial, timeParallel, speedUp);
+        }
     }
 }
